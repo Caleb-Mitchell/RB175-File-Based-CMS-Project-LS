@@ -4,8 +4,16 @@ require "tilt/erubis"
 
 root = File.expand_path("..", __FILE__)
 
-get '/' do
+configure do
+  enable :sessions
+  set :session_secret, 'secret'
+end
+
+before do
   @files = Dir.glob("#{root}/data/*").map { |file| File.basename(file) }.sort
+end
+
+get '/' do
   erb :index
 end
 
@@ -14,5 +22,10 @@ get '/:file_name' do
 
   # #send_file automatically guesses value for Content-Type header, guessed
   # from the file extension of the file.
-  send_file "#{root}/data/#{file_name}"
+  if @files.include?(file_name)
+    send_file "#{root}/data/#{file_name}"
+  else
+    session[:error] = "#{file_name} does not exist."
+    redirect '/'
+  end
 end

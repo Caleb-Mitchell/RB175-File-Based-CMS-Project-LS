@@ -29,4 +29,19 @@ class CMStest < Minitest::Test
     assert_equal "text/plain;charset=utf-8", last_response["Content-Type"]
     assert_includes last_response.body, "ruby history and changes."
   end
+
+  def test_document_does_not_exist
+    get "/does_not_exist.txt"
+
+    assert_equal 302, last_response.status
+
+    get last_response["Location"]
+
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, "does_not_exist.txt does not exist"
+
+    get "/" # Reload the page
+    # Assert that our message has been removed
+    refute_includes last_response.body, "does_not_exist.txt does not exist"
+  end
 end
