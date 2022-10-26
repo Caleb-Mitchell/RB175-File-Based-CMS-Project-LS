@@ -17,7 +17,6 @@ class CMStest < Minitest::Test
 
     assert_equal 200, last_response.status
     assert_equal "text/html;charset=utf-8", last_response["Content-Type"]
-
     assert_includes last_response.body, "about.txt"
     assert_includes last_response.body, "changes.txt"
     assert_includes last_response.body, "history.txt"
@@ -27,9 +26,6 @@ class CMStest < Minitest::Test
     get "/about.txt"
 
     assert_equal 200, last_response.status
-    # assert_equal "text/plain;charset=utf-8", last_response["Content-Type"]
-    # assert last_response.body.include?("great")
-
     assert_equal "text/plain;charset=utf-8", last_response["Content-Type"]
     assert_includes last_response.body, "ruby history and changes."
   end
