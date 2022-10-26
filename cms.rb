@@ -2,7 +2,7 @@ require "sinatra"
 require "sinatra/reloader" if development?
 require "tilt/erubis"
 
-root = File.expand_path("..", __FILE__)
+root = File.expand_path(__dir__)
 
 configure do
   enable :sessions
