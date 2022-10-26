@@ -9,6 +9,10 @@ gem "sinatra-contrib"
 gem "minitest"
 gem "rack-test"
 
+group :development do
+  gem "solargraph"
+end
+
 group :production do
   gem "puma"
 end
