@@ -30,8 +30,6 @@ end
 get '/:file_name' do
   file_name = params[:file_name]
 
-  # #send_file automatically guesses value for Content-Type header, guessed
-  # from the file extension of the file.
   if @files.include?(file_name)
     return md_to_html(file_name, root) if markdown?(file_name)
 

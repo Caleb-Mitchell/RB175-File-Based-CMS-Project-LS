@@ -60,10 +60,6 @@ class CMStest < Minitest::Test
     assert_equal "text/html;charset=utf-8", last_response["Content-Type"]
     assert_includes last_response.body, "<textarea"
     assert_includes last_response.body, '<input type="submit"'
-
-    # post "/changes.txt/edit"
-
-    # assert_equal 302, last_response.status
   end
 
   def test_updating_document
