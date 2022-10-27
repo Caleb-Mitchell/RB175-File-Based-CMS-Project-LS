@@ -3,54 +3,68 @@ require "sinatra"
 require "sinatra/reloader" if development?
 require "tilt/erubis"
 
-root = File.expand_path(__dir__)
-
 configure do
   enable :sessions
   set :session_secret, 'secret'
 end
 
-before do
-  @files = Dir.glob("#{root}/data/*").map { |file| File.basename(file) }.sort
+def data_path
+  if ENV["RACK_ENV"] == "test"
+    File.expand_path('test/data', __dir__)
+  else
+    File.expand_path('data', __dir__)
+  end
 end
 
-def markdown?(file_name)
-  file_name.chars[-2..-1].join == "md"
-end
-
-def md_to_html(file_name, root)
+def render_markdown(text)
   markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
-  markdown.render(File.read("#{root}/data/#{file_name}"))
+  markdown.render(text)
+end
+
+def load_file_content(path)
+  content = File.read(path)
+  case File.extname(path)
+  when ".txt"
+    headers["Content-Type"] = "text/plain"
+    content
+  when ".md"
+    render_markdown(content)
+  end
 end
 
 get '/' do
+  pattern = File.join(data_path, "*")
+  @files = Dir.glob(pattern).map do |path|
+    File.basename(path)
+  end
   erb :index
 end
 
 get '/:file_name' do
-  file_name = params[:file_name]
+  file_path = File.join(data_path, params[:file_name])
 
-  if @files.include?(file_name)
-    return md_to_html(file_name, root) if markdown?(file_name)
-
-    send_file "#{root}/data/#{file_name}"
+  if File.exist?(file_path)
+    load_file_content(file_path)
   else
-    session[:error] = "#{file_name} does not exist."
+    session[:error] = "#{params[:file_name]} does not exist."
     redirect '/'
   end
 end
 
 get '/:file_name/edit' do
+  file_path = File.join(data_path, params[:file_name])
+
   @file_name = params[:file_name]
-  @content = File.read("#{root}/data/#{@file_name}")
+  @content = File.read(file_path)
 
   erb :edit
 end
 
 post '/:file_name/edit' do
-  new_content = params[:file_content]
-  File.write("#{root}/data/#{params[:file_name]}", new_content)
-  session[:success] = "#{params[:file_name]} has been updated.."
+  file_path = File.join(data_path, params[:file_name])
 
+  File.write(file_path, params[:content])
+
+  session[:success] = "#{params[:file_name]} has been updated."
   redirect '/'
 end
