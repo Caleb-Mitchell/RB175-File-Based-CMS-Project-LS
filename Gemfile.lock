@@ -31,6 +31,7 @@ GEM
     rack-test (2.0.2)
       rack (>= 1.3)
     rainbow (3.1.1)
+    redcarpet (3.5.1)
     regexp_parser (2.6.0)
     reverse_markdown (2.1.1)
       nokogiri
@@ -89,6 +90,7 @@ DEPENDENCIES
   minitest
   puma
   rack-test
+  redcarpet
   sinatra (~> 1.4.7)
   sinatra-contrib
   solargraph
