@@ -14,6 +14,9 @@
     <% if session[:error] %>
       <p><%= session.delete(:error) %></p>
     <% end %>
+    <% if session[:success] %>
+      <p><%= session.delete(:success) %></p>
+    <% end %>
   </header>
   <body>
     <%= yield %>

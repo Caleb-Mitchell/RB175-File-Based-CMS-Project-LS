@@ -17,17 +17,17 @@ class CMStest < Minitest::Test
 
     assert_equal 200, last_response.status
     assert_equal "text/html;charset=utf-8", last_response["Content-Type"]
-    assert_includes last_response.body, "about.txt"
+    assert_includes last_response.body, "about.md"
     assert_includes last_response.body, "changes.txt"
     assert_includes last_response.body, "history.txt"
+    assert_includes last_response.body, '<a href="/about.md/edit">Edit</a>'
   end
 
   def test_file_name
-    get "/about.txt"
+    get "/changes.txt"
 
     assert_equal 200, last_response.status
     assert_equal "text/plain;charset=utf-8", last_response["Content-Type"]
-    assert_includes last_response.body, "ruby history and changes."
   end
 
   def test_document_does_not_exist
@@ -51,5 +51,32 @@ class CMStest < Minitest::Test
     assert_equal 200, last_response.status
     assert_equal "text/html;charset=utf-8", last_response["Content-Type"]
     assert_includes last_response.body, "<h1>Ruby is...</h1>"
+  end
+
+  def test_edit_file
+    get "/changes.txt/edit"
+
+    assert_equal 200, last_response.status
+    assert_equal "text/html;charset=utf-8", last_response["Content-Type"]
+    assert_includes last_response.body, "<textarea"
+    assert_includes last_response.body, '<input type="submit"'
+
+    # post "/changes.txt/edit"
+
+    # assert_equal 302, last_response.status
+  end
+
+  def test_updating_document
+    post "/changes.txt/edit", file_content: "new content"
+
+    assert_equal 302, last_response.status
+
+    get last_response["Location"]
+
+    assert_includes last_response.body, "changes.txt has been updated"
+
+    get "/changes.txt"
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, "new content"
   end
 end
