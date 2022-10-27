@@ -20,7 +20,6 @@ class CMStest < Minitest::Test
     assert_includes last_response.body, "about.md"
     assert_includes last_response.body, "changes.txt"
     assert_includes last_response.body, "history.txt"
-    assert_includes last_response.body, '<a href="/about.md/edit">Edit</a>'
   end
 
   def test_file_name
