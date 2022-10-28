@@ -22,11 +22,13 @@ class CMStest < Minitest::Test
     FileUtils.rm_rf(data_path)
   end
 
+  # rubocop:disable Style/FileWrite
   def create_document(name, content = "")
     File.open(File.join(data_path, name), "w") do |file|
       file.write(content)
     end
   end
+  # rubocop:enable Style/FileWrite
 
   def test_index
     create_document "about.md"

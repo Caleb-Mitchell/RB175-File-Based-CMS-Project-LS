@@ -8,13 +8,15 @@ configure do
   set :session_secret, 'secret'
 end
 
+# rubocop:disable Style/ExpandPathArguments
 def data_path
   if ENV["RACK_ENV"] == "test"
-    File.expand_path('test/data', __dir__)
+    File.expand_path('../test/data', __FILE__)
   else
-    File.expand_path('data', __dir__)
+    File.expand_path('../data', __FILE__)
   end
 end
+# rubocop:enable Style/ExpandPathArguments
 
 def render_markdown(text)
   markdown = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
@@ -45,12 +47,16 @@ get '/new' do
 end
 
 post '/new' do
-  # create file
-  file_path = File.join(data_path, params[:file_name])
-  File.write(file_path, params[:file_name])
+  if params[:file_name].empty?
+    session[:error] = "A name is required."
+    erb :new
+  else
+    file_path = File.join(data_path, params[:file_name])
+    File.write(file_path, params[:file_name])
 
-  session[:success] = "#{params[:file_name]} was created."
-  redirect '/'
+    session[:success] = "#{params[:file_name]} was created."
+    redirect '/'
+  end
 end
 
 get '/:file_name' do
