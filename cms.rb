@@ -40,6 +40,19 @@ get '/' do
   erb :index
 end
 
+get '/new' do
+  erb :new
+end
+
+post '/new' do
+  # create file
+  file_path = File.join(data_path, params[:file_name])
+  File.write(file_path, params[:file_name])
+
+  session[:success] = "#{params[:file_name]} was created."
+  redirect '/'
+end
+
 get '/:file_name' do
   file_path = File.join(data_path, params[:file_name])
 

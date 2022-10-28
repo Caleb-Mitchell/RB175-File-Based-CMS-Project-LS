@@ -7,6 +7,10 @@ div {
   padding: 10px;
 }
 
+fieldset {
+  border: none;
+}
+
 .error {
   background-color: #fffd9e;
 }
