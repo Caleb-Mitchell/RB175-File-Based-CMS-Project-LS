@@ -28,7 +28,7 @@ def load_file_content(path)
     headers["Content-Type"] = "text/plain"
     content
   when ".md"
-    render_markdown(content)
+    erb render_markdown(content)
   end
 end
 
@@ -60,10 +60,10 @@ get '/:file_name/edit' do
   erb :edit
 end
 
-post '/:file_name/edit' do
+post '/:file_name' do
   file_path = File.join(data_path, params[:file_name])
 
-  File.write(file_path, params[:content])
+  File.write(file_path, params[:file_content])
 
   session[:success] = "#{params[:file_name]} has been updated."
   redirect '/'

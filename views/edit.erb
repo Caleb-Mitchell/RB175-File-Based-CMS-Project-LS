@@ -1,4 +1,4 @@
-<form action="<%= @file_name %>/edit" method="post">
+<form action="/<%= @file_name %>" method="post">
   <label for="file_content">Edit content of <%= @file_name %>:</label>
   <div>
     <textarea id="file_content" name="file_content" rows="30" cols="80"><%= @content %></textarea>

@@ -1,0 +1,16 @@
+body {
+  padding: 1em;
+  font-family: sans-serif;
+}
+
+div {
+  padding: 10px;
+}
+
+.error {
+  background-color: #fffd9e;
+}
+
+.success {
+  background-color: green;
+}
