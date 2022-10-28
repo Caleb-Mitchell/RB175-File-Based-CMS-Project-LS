@@ -11,6 +11,10 @@ fieldset {
   border: none;
 }
 
+form.delete {
+  display: inline-block;
+}
+
 .error {
   background-color: #fffd9e;
 }
