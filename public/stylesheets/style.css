@@ -9,6 +9,7 @@ div {
 
 fieldset {
   border: none;
+  padding: 0;
 }
 
 form.delete {
@@ -21,4 +22,9 @@ form.delete {
 
 .success {
   background-color: green;
+}
+
+.user-status {
+  font-style: italic;
+  font-size: 0.9em;
 }

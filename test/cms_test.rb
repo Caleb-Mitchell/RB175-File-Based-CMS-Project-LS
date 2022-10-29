@@ -30,6 +30,10 @@ class CMStest < Minitest::Test
   end
   # rubocop:enable Style/FileWrite
 
+  def session
+    last_request.env["rack.session"]
+  end
+
   def test_index
     create_document "about.md"
     create_document "changes.txt"
@@ -147,5 +151,49 @@ class CMStest < Minitest::Test
     get "/" # Reload the page
     # Assert that our file has been deleted
     refute_includes last_response.body, "file.txt"
+  end
+
+  def test_view_sign_in
+    get "/users/signin"
+
+    assert_equal 200, last_response.status
+
+    assert_includes last_response.body, "<form action='/users/signin'"
+    assert_includes last_response.body, "<input type='text'"
+    assert_includes last_response.body, "<input type='password'"
+    assert_includes last_response.body, "<input type='submit' value='Sign In'>"
+  end
+
+  def test_sign_in_success
+    post "/users/signin", username: "admin", password: "secret"
+
+    assert_equal 302, last_response.status
+
+    get last_response["Location"]
+    assert_includes last_response.body, "Welcome!"
+    assert_includes last_response.body, "Signed in as admin"
+    assert_includes last_response.body, "Sign Out"
+  end
+
+  def test_sign_in_failure
+    post "/users/signin", username: "admin", password: "wrong_password"
+
+    assert_equal 422, last_response.status
+
+    assert_includes last_response.body, "Invalid credentials."
+    assert_includes last_response.body, "Sign In"
+    assert_includes last_response.body, "admin"
+  end
+
+  def test_sign_out
+    post "/users/signin", username: "admin", password: "secret"
+    get last_response["Location"]
+    assert_includes last_response.body, "Welcome!"
+
+    post "/users/signout"
+    get last_response["Location"]
+
+    assert_includes last_response.body, "You have been signed out."
+    assert_includes last_response.body, "Sign In"
   end
 end

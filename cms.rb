@@ -8,6 +8,13 @@ configure do
   set :session_secret, 'secret'
 end
 
+ADMIN_USER = "admin"
+ADMIN_PASSWORD = "secret"
+
+before do
+  session[:users] ||= { ADMIN_USER => ADMIN_PASSWORD }
+end
+
 # rubocop:disable Style/ExpandPathArguments
 def data_path
   if ENV["RACK_ENV"] == "test"
@@ -34,6 +41,11 @@ def load_file_content(path)
   end
 end
 
+def valid_user?
+  session[:users].keys.include?(params[:username]) &&
+    session[:users][params[:username]] == params[:password]
+end
+
 get '/' do
   pattern = File.join(data_path, "*")
   @files = Dir.glob(pattern).map do |path|
@@ -58,6 +70,29 @@ post '/create' do
     session[:success] = "#{params[:file_name]} was created."
     redirect '/'
   end
+end
+
+get '/users/signin' do
+  erb :signin
+end
+
+post '/users/signin' do
+  if valid_user?
+    session[:signed_in] =
+      { current_user: params[:username], current_pass: params[:password] }
+    session[:success] = "Welcome!"
+    redirect '/'
+  else
+    session[:error] = "Invalid credentials."
+    status 422
+    erb :signin
+  end
+end
+
+post '/users/signout' do
+  session.delete(:signed_in)
+  session[:success] = "You have been signed out."
+  redirect '/'
 end
 
 get '/:file_name' do
