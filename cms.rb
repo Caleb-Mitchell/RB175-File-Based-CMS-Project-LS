@@ -2,17 +2,11 @@ require "redcarpet"
 require "sinatra"
 require "sinatra/reloader" if development?
 require "tilt/erubis"
+require "yaml"
 
 configure do
   enable :sessions
   set :session_secret, 'secret'
-end
-
-ADMIN_USER = "admin"
-ADMIN_PASSWORD = "secret"
-
-before do
-  session[:users] ||= { ADMIN_USER => ADMIN_PASSWORD }
 end
 
 # rubocop:disable Style/ExpandPathArguments
@@ -22,6 +16,15 @@ def data_path
   else
     File.expand_path('../data', __FILE__)
   end
+end
+
+def load_user_credentials
+  credentials_path = if ENV["RACK_ENV"] == "test"
+                       File.expand_path("../test/users.yml", __FILE__)
+                     else
+                       File.expand_path("../users.yml", __FILE__)
+                     end
+  YAML.load_file(credentials_path)
 end
 # rubocop:enable Style/ExpandPathArguments
 
@@ -41,9 +44,15 @@ def load_file_content(path)
   end
 end
 
-def valid_user?
-  session[:users].keys.include?(params[:username]) &&
-    session[:users][params[:username]] == params[:password]
+def user_signed_in?
+  session.key?(:username)
+end
+
+def require_signed_in_user
+  return if user_signed_in?
+
+  session[:error] = "You must be signed in to do that"
+  redirect '/'
 end
 
 get '/' do
@@ -55,10 +64,14 @@ get '/' do
 end
 
 get '/new' do
+  require_signed_in_user
+
   erb :new
 end
 
 post '/create' do
+  require_signed_in_user
+
   if params[:file_name].empty?
     session[:error] = "A name is required."
     status 422
@@ -77,9 +90,11 @@ get '/users/signin' do
 end
 
 post '/users/signin' do
-  if valid_user?
-    session[:signed_in] =
-      { current_user: params[:username], current_pass: params[:password] }
+  credentials = load_user_credentials
+  username = params[:username]
+
+  if credentials.key?(username) && credentials[username] == params[:password]
+    session[:username] = username
     session[:success] = "Welcome!"
     redirect '/'
   else
@@ -90,7 +105,7 @@ post '/users/signin' do
 end
 
 post '/users/signout' do
-  session.delete(:signed_in)
+  session.delete(:username)
   session[:success] = "You have been signed out."
   redirect '/'
 end
@@ -107,6 +122,8 @@ get '/:file_name' do
 end
 
 get '/:file_name/edit' do
+  require_signed_in_user
+
   file_path = File.join(data_path, params[:file_name])
 
   @file_name = params[:file_name]
@@ -116,6 +133,8 @@ get '/:file_name/edit' do
 end
 
 post '/:file_name' do
+  require_signed_in_user
+
   file_path = File.join(data_path, params[:file_name])
 
   File.write(file_path, params[:file_content])
@@ -125,6 +144,8 @@ post '/:file_name' do
 end
 
 post '/:file_name/delete' do
+  require_signed_in_user
+
   file_path = File.join(data_path, params[:file_name])
 
   File.delete(file_path)

@@ -34,6 +34,10 @@ class CMStest < Minitest::Test
     last_request.env["rack.session"]
   end
 
+  def admin_session
+    { "rack.session" => { username: "admin" } }
+  end
+
   def test_index
     create_document "about.md"
     create_document "changes.txt"
@@ -47,7 +51,7 @@ class CMStest < Minitest::Test
   end
 
   def test_file_name
-    create_document "/changes.txt"
+    create_document "changes.txt"
 
     get "/changes.txt"
 
@@ -73,9 +77,9 @@ class CMStest < Minitest::Test
   end
 
   def test_editing_document
-    create_document "/changes.txt"
+    create_document "changes.txt"
 
-    get "/changes.txt/edit"
+    get "/changes.txt/edit", {}, admin_session
 
     assert_equal 200, last_response.status
     assert_equal "text/html;charset=utf-8", last_response["Content-Type"]
@@ -84,7 +88,7 @@ class CMStest < Minitest::Test
   end
 
   def test_updating_document
-    post "/changes.txt", file_content: "new content"
+    post "/changes.txt", { file_content: "new content" }, admin_session
 
     assert_equal 302, last_response.status
     assert_equal "changes.txt has been updated.", session[:success]
@@ -95,7 +99,7 @@ class CMStest < Minitest::Test
   end
 
   def test_view_new_document_form
-    get "/new"
+    get "/new", {}, admin_session
 
     assert_equal 200, last_response.status
     assert_includes last_response.body, "<form action='/create' method='post'>"
@@ -104,7 +108,7 @@ class CMStest < Minitest::Test
   end
 
   def test_create_new_document
-    post "/create", file_name: "test.txt"
+    post "/create", { file_name: "test.txt" }, admin_session
     assert_equal 302, last_response.status
     assert_equal "test.txt was created.", session[:success]
 
@@ -114,7 +118,7 @@ class CMStest < Minitest::Test
 
   def test_create_new_document_without_filename
     # create document without a name
-    post "/create", file_name: ""
+    post "/create", { file_name: "" }, admin_session
 
     assert_equal 422, last_response.status
 
@@ -128,7 +132,7 @@ class CMStest < Minitest::Test
   def test_delete_document
     create_document "file.txt"
 
-    post "/file.txt/delete"
+    post "/file.txt/delete", {}, admin_session
     assert_equal 302, last_response.status
     assert_equal "file.txt has been deleted.", session[:success]
 
@@ -151,7 +155,7 @@ class CMStest < Minitest::Test
     post "/users/signin", username: "admin", password: "secret"
     assert_equal 302, last_response.status
     assert_equal "Welcome!", session[:success]
-    assert_equal "admin", session[:signed_in][:current_user]
+    assert_equal "admin", session[:username]
 
     get last_response["Location"]
     assert_includes last_response.body, "Signed in as admin"
@@ -166,9 +170,7 @@ class CMStest < Minitest::Test
   end
 
   def test_sign_out
-    get "/", {},
-        { "rack.session" =>
-          { signed_in: { current_user: "admin", current_pass: "secret" } } }
+    get "/", {}, admin_session
     assert_includes last_response.body, "Signed in as admin"
 
     post "/users/signout"

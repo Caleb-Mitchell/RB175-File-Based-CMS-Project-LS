@@ -12,8 +12,8 @@
 
 <p><a href="/new">New Document</a></p>
 
-<% if session[:signed_in] %>
-  <p class="user-status">Signed in as <%= session[:signed_in][:current_user] %></p>
+<% if session[:username] %>
+  <p class="user-status">Signed in as <%= session[:username] %></p>
   <form action="/users/signout" method="post">
     <input type="submit" value="Sign Out">
   </form>

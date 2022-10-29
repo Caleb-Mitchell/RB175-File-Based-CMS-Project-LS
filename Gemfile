@@ -7,6 +7,7 @@ gem "redcarpet"
 gem "erubis"
 gem "sinatra", "~>1.4.7"
 gem "sinatra-contrib"
+gem "yaml"
 
 gem "minitest"
 gem "rack-test"
