@@ -12,6 +12,8 @@ gem "yaml"
 gem "minitest"
 gem "rack-test"
 
+gem "bcrypt"
+
 group :production do
   gem "puma"
 end
