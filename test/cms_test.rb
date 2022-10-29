@@ -55,19 +55,11 @@ class CMStest < Minitest::Test
     assert_equal "text/plain", last_response["Content-Type"]
   end
 
-  def test_document_does_not_exist
+  def test_document_not_found
     get "/does_not_exist.txt"
 
     assert_equal 302, last_response.status
-
-    get last_response["Location"]
-
-    assert_equal 200, last_response.status
-    assert_includes last_response.body, "does_not_exist.txt does not exist"
-
-    get "/" # Reload the page
-    # Assert that our message has been removed
-    refute_includes last_response.body, "does_not_exist.txt does not exist"
+    assert_equal "does_not_exist.txt does not exist.", session[:error]
   end
 
   def test_viewing_markdown_document
@@ -95,10 +87,7 @@ class CMStest < Minitest::Test
     post "/changes.txt", file_content: "new content"
 
     assert_equal 302, last_response.status
-
-    get last_response["Location"]
-
-    assert_includes last_response.body, "changes.txt has been updated"
+    assert_equal "changes.txt has been updated.", session[:success]
 
     get "/changes.txt"
     assert_equal 200, last_response.status
@@ -115,15 +104,12 @@ class CMStest < Minitest::Test
   end
 
   def test_create_new_document
-    post "/create", file_name: "file.txt"
+    post "/create", file_name: "test.txt"
     assert_equal 302, last_response.status
+    assert_equal "test.txt was created.", session[:success]
 
-    get last_response["Location"]
-    assert_includes last_response.body, "file.txt was created."
-
-    get "/" # Reload the page
-    # Assert that our message has been removed
-    refute_includes last_response.body, "file.txt was created."
+    get "/"
+    assert_includes last_response.body, "test.txt"
   end
 
   def test_create_new_document_without_filename
@@ -141,16 +127,13 @@ class CMStest < Minitest::Test
 
   def test_delete_document
     create_document "file.txt"
+
     post "/file.txt/delete"
-
     assert_equal 302, last_response.status
+    assert_equal "file.txt has been deleted.", session[:success]
 
-    get last_response["Location"]
-    assert_includes last_response.body, "file.txt has been deleted."
-
-    get "/" # Reload the page
-    # Assert that our file has been deleted
-    refute_includes last_response.body, "file.txt"
+    get "/"
+    refute_includes last_response.body, 'href="file.txt"'
   end
 
   def test_view_sign_in
@@ -166,34 +149,33 @@ class CMStest < Minitest::Test
 
   def test_sign_in_success
     post "/users/signin", username: "admin", password: "secret"
-
     assert_equal 302, last_response.status
+    assert_equal "Welcome!", session[:success]
+    assert_equal "admin", session[:signed_in][:current_user]
 
     get last_response["Location"]
-    assert_includes last_response.body, "Welcome!"
     assert_includes last_response.body, "Signed in as admin"
-    assert_includes last_response.body, "Sign Out"
   end
 
   def test_sign_in_failure
     post "/users/signin", username: "admin", password: "wrong_password"
-
     assert_equal 422, last_response.status
 
+    assert_nil session[:signed_in]
     assert_includes last_response.body, "Invalid credentials."
-    assert_includes last_response.body, "Sign In"
-    assert_includes last_response.body, "admin"
   end
 
   def test_sign_out
-    post "/users/signin", username: "admin", password: "secret"
-    get last_response["Location"]
-    assert_includes last_response.body, "Welcome!"
+    get "/", {},
+        { "rack.session" =>
+          { signed_in: { current_user: "admin", current_pass: "secret" } } }
+    assert_includes last_response.body, "Signed in as admin"
 
     post "/users/signout"
-    get last_response["Location"]
+    assert_includes "You have been signed out.", session[:success]
 
-    assert_includes last_response.body, "You have been signed out."
+    get last_response["Location"]
+    assert_nil session[:signed_in]
     assert_includes last_response.body, "Sign In"
   end
 end
