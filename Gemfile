@@ -13,6 +13,7 @@ gem "minitest"
 gem "rack-test"
 
 gem "bcrypt"
+gem "securerandom"
 
 group :production do
   gem "puma"

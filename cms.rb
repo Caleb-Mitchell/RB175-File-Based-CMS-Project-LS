@@ -1,13 +1,17 @@
 require "bcrypt"
 require "redcarpet"
+require "securerandom"
 require "sinatra"
 require "sinatra/reloader" if development?
 require "tilt/erubis"
 require "yaml"
 
+ALLOWED_FILE_EXTENSIONS = [".txt", ".md"]
+SECRET = SecureRandom.hex(32)
+
 configure do
   enable :sessions
-  set :session_secret, 'secret'
+  set :session_secret, SECRET
 end
 
 # rubocop:disable Style/ExpandPathArguments
@@ -86,6 +90,10 @@ post '/create' do
 
   if params[:file_name].empty?
     session[:error] = "A name is required."
+    status 422
+    erb :new
+  elsif !ALLOWED_FILE_EXTENSIONS.include?(File.extname(params[:file_name]))
+    session[:error] = "The only valid filetypes are #{ALLOWED_FILE_EXTENSIONS}"
     status 422
     erb :new
   else
