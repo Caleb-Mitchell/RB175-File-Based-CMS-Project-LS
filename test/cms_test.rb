@@ -180,4 +180,17 @@ class CMStest < Minitest::Test
     assert_nil session[:signed_in]
     assert_includes last_response.body, "Sign In"
   end
+
+  def test_validate_file_extension
+    post "/create", { file_name: "test.txt" }, admin_session
+    assert_equal 302, last_response.status
+    assert_equal "test.txt was created.", session[:success]
+  end
+
+  def test_validate_file_extension_failure
+    post "/create", { file_name: "test.sh" }, admin_session
+    assert_equal 422, last_response.status
+    assert_includes last_response.body,
+                    "The only valid filetypes are", session[:error]
+  end
 end

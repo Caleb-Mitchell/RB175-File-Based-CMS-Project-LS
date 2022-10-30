@@ -23,13 +23,27 @@
 <!-- - When a signed-out user views the index page of the site, they should see a "Sign In" button. -->
 <!--   1. add a sign in button to the index page, only if user is not signed in -->
 
-- When a user clicks the "Sign In" button, they should be taken to a new page with a sign in form. The form should contain a text input labeled "Username" and a password input labeled "Password". The form should also contain a submit button labeled "Sign In":
-<!-- TODO: -->
+<!-- - When a user clicks the "Sign In" button, they should be taken to a new page with a sign in form. The form should contain a text input labeled "Username" and a password input labeled "Password". The form should also contain a submit button labeled "Sign In": -->
+<!---->
+<!-- - When a user enters the username "admin" and password "secret" into the sign in form and clicks the "Sign In" button, they should be signed in and redirected to the index page. A message should display that says "Welcome!": -->
+<!---->
+<!-- - When a user enters any other username and password into the sign in form and clicks the "Sign In" button, the sign in form should be redisplayed and an error message "Invalid credentials" should be shown. The username they entered into the form should appear in the username input. -->
+<!---->
+<!-- - When a signed-in user views the index page, they should see a message at the bottom of the page that says "Signed in as $USERNAME.", followed by a button labeled "Sign Out". -->
+<!---->
+<!-- - When a signed-in user clicks this "Sign Out" button, they should be signed out of the application and redirected to the index page of the site. They should see a message that says "You have been signed out.". -->
 
-- When a user enters the username "admin" and password "secret" into the sign in form and clicks the "Sign In" button, they should be signed in and redirected to the index page. A message should display that says "Welcome!":
+# Implement validation that document names contain an extension that the application supports.
 
-- When a user enters any other username and password into the sign in form and clicks the "Sign In" button, the sign in form should be redisplayed and an error message "Invalid credentials" should be shown. The username they entered into the form should appear in the username input.
+<!-- - when creating a new document: -->
+<!--   - check the file extension -->
+<!--   - if it's supported, allow it -->
+<!--   - if it isn't, redisplay the page and inform the user of the error. -->
 
-- When a signed-in user views the index page, they should see a message at the bottom of the page that says "Signed in as $USERNAME.", followed by a button labeled "Sign Out".
+# Implement a duplicate butom that creates a new document based on an old one
 
-- When a signed-in user clicks this "Sign Out" button, they should be signed out of the application and redirected to the index page of the site. They should see a message that says "You have been signed out.".
+- create a duplicate button on the index view
+- create a route /duplicate to post when button is clicked
+- when call made to post /duplicate, create a new file in /data that is the same
+as the original
+- redirect to index
