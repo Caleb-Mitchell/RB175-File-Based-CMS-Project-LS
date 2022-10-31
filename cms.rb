@@ -23,6 +23,14 @@ def data_path
   end
 end
 
+def image_path
+  if ENV["RACK_ENV"] == "test"
+    File.expand_path('../test/public/images', __FILE__)
+  else
+    File.expand_path('../public/images', __FILE__)
+  end
+end
+
 def load_user_credentials
   credentials_path = if ENV["RACK_ENV"] == "test"
                        File.expand_path("../test/users.yml", __FILE__)
@@ -92,6 +100,13 @@ def create_file_list
   end
 end
 
+def create_image_list
+  pattern = File.join(image_path, "*")
+  @image_files = Dir.glob(pattern).map do |path|
+    File.basename(path)
+  end
+end
+
 def file_is_multiple_copy?(filename)
   # file is a copy if base file name ends in "copy" and any number of digits
   File.basename(filename, ".*").match?(/copy[0-9]+$/)
@@ -128,6 +143,7 @@ end
 
 get '/' do
   create_file_list
+  create_image_list
   erb :index
 end
 
@@ -216,6 +232,36 @@ get '/:file_name' do
   end
 end
 
+get '/public/images/:image_name' do
+  file_path = File.join(image_path, params[:image_name])
+
+  if File.exist?(file_path)
+    redirect "/images/#{params[:image_name]}"
+  else
+    session[:error] = "#{params[:image_name]} does not exist."
+    redirect '/'
+  end
+end
+
+post '/image/:image_name/delete' do
+  require_signed_in_user
+
+  file_path = File.join(image_path, params[:image_name])
+
+  File.delete(file_path)
+
+  session[:success] = "Image #{params[:file_name]} has been deleted."
+  redirect '/'
+end
+
+post '/image/upload' do
+  @filename = params[:image_name][:filename]
+  file = params[:image_name][:tempfile]
+
+  File.binwrite("#{image_path}/#{@filename}", file.read)
+  redirect '/'
+end
+
 get '/:file_name/edit' do
   require_signed_in_user
 
@@ -245,7 +291,7 @@ post '/:file_name/delete' do
 
   File.delete(file_path)
 
-  session[:success] = "#{params[:file_name]} has been deleted."
+  session[:success] = "Document #{params[:file_name]} has been deleted."
   redirect '/'
 end
 

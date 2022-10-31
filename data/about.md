@@ -1,3 +1,6 @@
-# Ruby is...
+# Markdown
 
-A dynamic, open source programming language with a focus on simplicity and productivity. It has an elegant syntax that is natural and easy to write.
+Beautiful Markdown...
+
+![Alt text](images/pic.jpeg)
+![Alt text](images/1680x1050-dark-archlinux.png)

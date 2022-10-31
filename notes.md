@@ -62,3 +62,11 @@
 <!-- 4. when this form is submitted, those values should be added to the yaml file -->
 
 # Add the ability to upload images to the CMS (which could be referenced within markdown files).
+
+<!-- 1. Add link to index page, upload image -->
+<!-- 2. add post request to upload image -->
+<!-- 3. Add instructions to edit page, showing how to reference existing image file with relative link -->
+<!-- 4. add ability to view images on new page with get request -->
+<!-- 5. add ability to delete images -->
+6. also display list of current image files on edit page
+7. add tests

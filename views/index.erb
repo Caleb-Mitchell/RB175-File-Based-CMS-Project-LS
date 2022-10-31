@@ -1,8 +1,9 @@
+<h3>Documents</h3>
 <ul>
   <% @files.each do |file| %>
     <li>
       <a href="/<%= file %>"><%= file %></a>
-      <a href="/<%= file %>/edit">Edit</a>
+      <a href="/<%= file %>/edit"><button>Edit</button></a>
       <form class="inline" action="/<%= file %>/delete" method="post">
         <input type="submit" value="Delete" name="file_name">
       </form>
@@ -13,7 +14,29 @@
   <% end %>
 </ul>
 
-<p><a href="/new">New Document</a></p>
+<h3>Images</h3>
+
+<ul>
+  <% @image_files.each do |image| %>
+    <li>
+      <a href="/public/images/<%= image %>"><%= image %></a>
+      <form class="inline" action="/image/<%= image %>/delete" method="post">
+        <input type="submit" value="Delete" name="file_name">
+      </form>
+    </li>
+  <% end %>
+</ul>
+
+<hr>
+
+<a href="/new"><input type="button" value="New Document"></a>
+
+<form action="/image/upload" method="post", enctype="multipart/form-data">
+  <input type="file" name="image_name">
+  <input type="submit" value="Upload Image">
+</form>
+
+<hr>
 
 <a class="button" href="/users/signup">
   <input type="button" value="Sign Up">
