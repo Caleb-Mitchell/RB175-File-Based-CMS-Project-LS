@@ -1,14 +1,14 @@
 # When a user visits the home page, they should see a list of the documents in the CMS: history.txt, changes.txt and about.txt
 
-- Each document within the CMS will have a name that includes an extension.
-- This extension will determine how the contents of the page are displayed in
-  later steps.
-
-
-1. make the `public` directory
-2. make the appropriate files in that directory
-3. create a layout for the home page
-4. display the files in the public directory on as an unordered list on the home page
+<!-- - Each document within the CMS will have a name that includes an extension. -->
+<!-- - This extension will determine how the contents of the page are displayed in -->
+<!--   later steps. -->
+<!---->
+<!---->
+<!-- 1. make the `public` directory -->
+<!-- 2. make the appropriate files in that directory -->
+<!-- 3. create a layout for the home page -->
+<!-- 4. display the files in the public directory on as an unordered list on the home page -->
 
 # Implementation for creating new documents
 
@@ -60,3 +60,5 @@
 <!-- 2. when the button is clicked, direct the user to a page to view a sign up form -->
 <!-- 3. the sign up form should contain fields for a username and a password -->
 <!-- 4. when this form is submitted, those values should be added to the yaml file -->
+
+# Add the ability to upload images to the CMS (which could be referenced within markdown files).
