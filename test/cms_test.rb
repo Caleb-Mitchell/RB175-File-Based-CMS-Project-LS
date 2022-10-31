@@ -18,9 +18,14 @@ class CMStest < Minitest::Test
     FileUtils.mkdir_p(data_path)
   end
 
+  # rubocop:disable Style/ExpandPathArguments
   def teardown
     FileUtils.rm_rf(data_path)
+
+    file_path = File.join(File.expand_path("../users.yml", __FILE__))
+    FileUtils.rm_rf(file_path)
   end
+  # rubocop:enable Style/ExpandPathArguments
 
   # rubocop:disable Style/FileWrite
   def create_document(name, content = "")
@@ -152,7 +157,8 @@ class CMStest < Minitest::Test
   end
 
   def test_sign_in_success
-    post "/users/signin", username: "admin", password: "secret"
+    post "/users/signup", username: "admin", password: "admin"
+    post "/users/signin", username: "admin", password: "admin"
     assert_equal 302, last_response.status
     assert_equal "Welcome!", session[:success]
     assert_equal "admin", session[:username]
@@ -219,5 +225,39 @@ class CMStest < Minitest::Test
 
     get last_response["Location"]
     assert_includes last_response.body, "test_copy55.txt"
+  end
+
+  def test_view_sign_up_page
+    get "/users/signup"
+    assert_equal 200, last_response.status
+    assert_includes last_response.body,
+                    "<form action='/users/signup' method='post'>"
+    assert_includes last_response.body, "<input type='submit' value='Sign Up'>"
+  end
+
+  def test_create_new_user_success
+    post "/users/signup", username: "test", password: "test"
+    assert_equal 302, last_response.status
+    assert_equal "User test created.", session[:success]
+  end
+
+  def test_create_new_user_failure_missing_data
+    post "/users/signup", username: "", password: "test"
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, "A name is required."
+
+    post "/users/signup", username: "test", password: ""
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, "A password is required."
+  end
+
+  def test_create_new_user_failure_name_taken
+    post "/users/signup", username: "test", password: "test"
+    assert_equal 302, last_response.status
+    assert_equal "User test created.", session[:success]
+
+    post "/users/signup", username: "test", password: "test"
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, "That username is taken."
   end
 end

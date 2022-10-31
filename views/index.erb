@@ -15,13 +15,17 @@
 
 <p><a href="/new">New Document</a></p>
 
+<a class="button" href="/users/signup">
+  <input type="button" value="Sign Up">
+</a>
+
 <% if session[:username] %>
   <p class="user-status">Signed in as <%= session[:username] %></p>
   <form action="/users/signout" method="post">
     <input type="submit" value="Sign Out">
   </form>
 <% else %>
-  <a href="/users/signin">
+  <a class="button" href="/users/signin">
     <input type="button" value="Sign In">
   </a>
 <% end %>

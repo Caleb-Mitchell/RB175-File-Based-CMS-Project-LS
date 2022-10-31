@@ -29,7 +29,21 @@ def load_user_credentials
                      else
                        File.expand_path("../users.yml", __FILE__)
                      end
-  YAML.load_file(credentials_path)
+  if File.exist?(credentials_path)
+    YAML.load_file(credentials_path)
+  else
+    {}
+  end
+end
+
+def write_user_credentials(username, password)
+  credentials_path = if ENV["RACK_ENV"] == "test"
+                       File.expand_path("../test/users.yml", __FILE__)
+                     else
+                       File.expand_path("../users.yml", __FILE__)
+                     end
+  File.write(credentials_path,
+             "#{username}: #{BCrypt::Password.create(password)}\n", mode: 'a+')
 end
 # rubocop:enable Style/ExpandPathArguments
 
@@ -102,6 +116,16 @@ def update_name_copy(filename)
   end
 end
 
+def username_available?(username)
+  load_user_credentials == false ||
+    !load_user_credentials.keys.include?(username)
+end
+
+def username_taken?(username)
+  !(load_user_credentials == false) &&
+    load_user_credentials.keys.include?(username)
+end
+
 get '/' do
   create_file_list
   erb :index
@@ -155,6 +179,30 @@ post '/users/signout' do
   session.delete(:username)
   session[:success] = "You have been signed out."
   redirect '/'
+end
+
+get '/users/signup' do
+  erb :signup
+end
+
+post '/users/signup' do
+  if params[:username].empty?
+    session[:error] = "A name is required."
+    status 422
+    erb :signup
+  elsif params[:password].empty?
+    session[:error] = "A password is required."
+    status 422
+    erb :signup
+  elsif username_available?(params[:username])
+    write_user_credentials(params[:username], params[:password])
+    session[:success] = "User #{params[:username]} created."
+    redirect '/'
+  elsif username_taken?(params[:username])
+    session[:error] = "That username is taken."
+    status 422
+    erb :signup
+  end
 end
 
 get '/:file_name' do

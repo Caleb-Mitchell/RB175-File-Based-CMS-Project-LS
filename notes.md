@@ -55,3 +55,8 @@
 <!-- - redirect to index -->
 
 # Extend this project with a user signup form.
+
+<!-- 1. add a signup button to the index page -->
+<!-- 2. when the button is clicked, direct the user to a page to view a sign up form -->
+<!-- 3. the sign up form should contain fields for a username and a password -->
+<!-- 4. when this form is submitted, those values should be added to the yaml file -->

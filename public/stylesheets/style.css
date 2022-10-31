@@ -16,6 +16,10 @@ form.inline {
   display: inline-block;
 }
 
+a.button {
+  text-decoration: none;
+}
+
 .error {
   background-color: #fffd9e;
 }
