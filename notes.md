@@ -53,3 +53,5 @@
 <!--       - if the name + copy already exists, generate a new name that is the same with the number number 2 added -->
 <!--       - if the name + copy does not already exist, generate a new name with copy added -->
 <!-- - redirect to index -->
+
+# Extend this project with a user signup form.
