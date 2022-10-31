@@ -3,8 +3,11 @@
     <li>
       <a href="/<%= file %>"><%= file %></a>
       <a href="/<%= file %>/edit">Edit</a>
-      <form class="delete" action="/<%= file %>/delete" method="post">
+      <form class="inline" action="/<%= file %>/delete" method="post">
         <input type="submit" value="Delete" name="file_name">
+      </form>
+      <form class="inline" action="/<%= file %>/duplicate" method="post">
+        <input type="submit" value="Duplicate" name="file_name">
       </form>
     </li>
   <% end %>

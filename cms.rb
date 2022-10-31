@@ -71,11 +71,39 @@ def valid_credentials?(username, password)
   end
 end
 
-get '/' do
+def create_file_list
   pattern = File.join(data_path, "*")
   @files = Dir.glob(pattern).map do |path|
     File.basename(path)
   end
+end
+
+def file_is_multiple_copy?(filename)
+  # file is a copy if base file name ends in "copy" and any number of digits
+  File.basename(filename, ".*").match?(/copy[0-9]+$/)
+end
+
+def file_is_single_copy?(filename)
+  # file is a single copy if base file name ends in "copy"
+  File.basename(filename, ".*").match?(/copy+$/)
+end
+
+def update_name_copy(filename)
+  ext = File.extname(filename)
+  base_name = File.basename(filename, '.*')
+
+  if file_is_multiple_copy?(filename)
+    copy_id = base_name.scan(/[0-9]+$/)[0].to_i + 1
+    "#{base_name.split(/_copy[0-9]+$/)[0]}_copy#{copy_id}#{ext}"
+  elsif file_is_single_copy?(filename)
+    "#{base_name}2#{ext}"
+  else
+    "#{base_name}_copy#{ext}"
+  end
+end
+
+get '/' do
+  create_file_list
   erb :index
 end
 
@@ -170,5 +198,16 @@ post '/:file_name/delete' do
   File.delete(file_path)
 
   session[:success] = "#{params[:file_name]} has been deleted."
+  redirect '/'
+end
+
+post '/:file_name/duplicate' do
+  require_signed_in_user
+
+  create_file_list
+  file_path = File.join(data_path, update_name_copy(params[:file_name]))
+  File.write(file_path, params[:file_content])
+
+  session[:success] = "#{params[:file_name]} has been duplicated."
   redirect '/'
 end

@@ -193,4 +193,31 @@ class CMStest < Minitest::Test
     assert_includes last_response.body,
                     "The only valid filetypes are", session[:error]
   end
+
+  def test_duplicate_file
+    post "/test.txt/duplicate", {}, admin_session
+    assert_equal 302, last_response.status
+    assert_equal "test.txt has been duplicated.", session[:success]
+
+    get last_response["Location"]
+    assert_includes last_response.body, "test_copy.txt"
+  end
+
+  def test_duplicating_a_duplicate
+    post "/test_copy.txt/duplicate", {}, admin_session
+    assert_equal 302, last_response.status
+    assert_equal "test_copy.txt has been duplicated.", session[:success]
+
+    get last_response["Location"]
+    assert_includes last_response.body, "test_copy2.txt"
+  end
+
+  def test_duplicating_a_multiple_duplicate
+    post "/test_copy54.txt/duplicate", {}, admin_session
+    assert_equal 302, last_response.status
+    assert_equal "test_copy54.txt has been duplicated.", session[:success]
+
+    get last_response["Location"]
+    assert_includes last_response.body, "test_copy55.txt"
+  end
 end

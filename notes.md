@@ -40,10 +40,16 @@
 <!--   - if it's supported, allow it -->
 <!--   - if it isn't, redisplay the page and inform the user of the error. -->
 
-# Implement a duplicate butom that creates a new document based on an old one
+# Implement a duplicate button that creates a new document based on an old one
 
-- create a duplicate button on the index view
-- create a route /duplicate to post when button is clicked
-- when call made to post /duplicate, create a new file in /data that is the same
-as the original
-- redirect to index
+<!-- - create a duplicate button on the index view -->
+<!-- - create a route /duplicate to post when button is clicked -->
+<!-- - when call made to post /duplicate, create a new file in /data that is the same -->
+<!-- as the original -->
+<!--   - call new file $FILE_NAME.copy$COPY_NUMBER.extension -->
+<!--   - SUBPROCCESS next_element_id -->
+<!--     - check for filename -->
+<!--       - if the name + copy + number exists, generate a new name with the number incremented -->
+<!--       - if the name + copy already exists, generate a new name that is the same with the number number 2 added -->
+<!--       - if the name + copy does not already exist, generate a new name with copy added -->
+<!-- - redirect to index -->

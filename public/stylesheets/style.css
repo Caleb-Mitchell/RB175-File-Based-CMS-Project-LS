@@ -12,7 +12,7 @@ fieldset {
   padding: 0;
 }
 
-form.delete {
+form.inline {
   display: inline-block;
 }
 
