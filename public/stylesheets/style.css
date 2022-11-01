@@ -7,6 +7,29 @@ div {
   padding: 10px;
 }
 
+div.edit-page {
+  display: flex;
+}
+
+div.edit {
+  width: 60%;
+  margin-right: 2rem;
+}
+
+textarea {
+  max-width: 100%;
+}
+
+aside.image-list {
+  width: 30%;
+}
+
+div.image-list > h3 {
+  padding-left: 1rem;
+  color: red;
+  text-align: center;
+}
+
 fieldset {
   border: none;
   padding: 0;

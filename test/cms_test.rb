@@ -139,7 +139,7 @@ class CMStest < Minitest::Test
 
     post "/file.txt/delete", {}, admin_session
     assert_equal 302, last_response.status
-    assert_equal "file.txt has been deleted.", session[:success]
+    assert_equal "Document file.txt has been deleted.", session[:success]
 
     get "/"
     refute_includes last_response.body, 'href="file.txt"'

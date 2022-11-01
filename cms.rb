@@ -264,6 +264,7 @@ end
 
 get '/:file_name/edit' do
   require_signed_in_user
+  create_image_list
 
   file_path = File.join(data_path, params[:file_name])
 

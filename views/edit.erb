@@ -1,9 +1,24 @@
-<form action="/<%= @file_name %>" method="post">
-  <label for="file_content">Edit content of <%= @file_name %>:</label>
-  <div>
-    <textarea id="file_content" name="file_content" rows="30" cols="80"><%= @content %></textarea>
-  </div>
-  <input type="submit" value="Save Changes">
-</form>
+<div class="edit-page">
+  <div class="edit">
+    <form action="/<%= @file_name %>" method="post">
+      <label for="file_content">Edit content of <%= @file_name %>:</label>
+      <div>
+        <textarea id="file_content" name="file_content" rows="30" cols="80"><%= @content %></textarea>
+      </div>
+      <input type="submit" value="Save Changes">
+    </form>
 
-<p class="user-status">(Link image in markdown files with ![Alt text][images/IMAGE_FILE_NAME]</p>
+    <p class="user-status">(Link image in markdown files with ![Alt text][images/IMAGE_FILE_NAME]</p>
+  </div>
+
+  <aside class="image-list">
+    <h3>Image List (For Markdown Links)</h3>
+    <ul>
+      <% @image_files.each do |image| %>
+        <li>
+          <%= image %>
+        </li>
+      <% end %>
+    </ul>
+  </aside>
+</div>

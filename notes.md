@@ -68,5 +68,5 @@
 <!-- 3. Add instructions to edit page, showing how to reference existing image file with relative link -->
 <!-- 4. add ability to view images on new page with get request -->
 <!-- 5. add ability to delete images -->
-6. also display list of current image files on edit page
+<!-- 6. also display list of current image files on edit page -->
 7. add tests
