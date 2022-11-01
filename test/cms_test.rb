@@ -289,7 +289,6 @@ class CMStest < Minitest::Test
     get "/image/test_image.png"
     assert_equal 302, last_response.status
 
-    assert_equal "", last_response.body
     assert_includes last_response["Location"], "images/test_image.png"
 
     FileUtils.rm_rf(image_path)
