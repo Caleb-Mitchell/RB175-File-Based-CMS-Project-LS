@@ -68,8 +68,6 @@ def load_file_content(path)
     content
   when ".md"
     erb render_markdown(content)
-  when "png"
-    content
   end
 end
 
