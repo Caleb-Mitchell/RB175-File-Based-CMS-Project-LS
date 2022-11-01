@@ -19,7 +19,7 @@
 <ul>
   <% @image_files.each do |image| %>
     <li>
-      <a href="/public/images/<%= image %>"><%= image %></a>
+      <a href="image/<%= image %>"><%= image %></a>
       <form class="inline" action="/image/<%= image %>/delete" method="post">
         <input type="submit" value="Delete" name="file_name">
       </form>

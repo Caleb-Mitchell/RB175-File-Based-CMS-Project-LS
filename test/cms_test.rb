@@ -53,6 +53,7 @@ class CMStest < Minitest::Test
     assert_equal "text/html;charset=utf-8", last_response["Content-Type"]
     assert_includes last_response.body, "about.md"
     assert_includes last_response.body, "changes.txt"
+    assert_includes last_response.body, 'type="submit" value="Upload Image">'
   end
 
   def test_file_name
@@ -90,6 +91,7 @@ class CMStest < Minitest::Test
     assert_equal "text/html;charset=utf-8", last_response["Content-Type"]
     assert_includes last_response.body, "<textarea"
     assert_includes last_response.body, '<input type="submit"'
+    assert_includes last_response.body, "Image List"
   end
 
   def test_updating_document
@@ -259,5 +261,61 @@ class CMStest < Minitest::Test
     post "/users/signup", username: "test", password: "test"
     assert_equal 422, last_response.status
     assert_includes last_response.body, "That username is taken."
+  end
+
+  def test_image_upload
+    create_document "test_image.png"
+    FileUtils.mkdir_p(image_path)
+
+    path = "#{data_path}/test_image.png"
+    post "/image/upload",
+         { image_name: Rack::Test::UploadedFile.new(path, "image/png") },
+         admin_session
+
+    assert File.exist?("#{image_path}/test_image.png")
+
+    FileUtils.rm_rf(image_path)
+  end
+
+  def test_view_image_success
+    create_document "test_image.png"
+    FileUtils.mkdir_p(image_path)
+
+    path = "#{data_path}/test_image.png"
+    post "/image/upload",
+         { image_name: Rack::Test::UploadedFile.new(path, "image/png") },
+         admin_session
+
+    get "/image/test_image.png"
+    assert_equal 302, last_response.status
+
+    assert_equal "", last_response.body
+    assert_includes last_response["Location"], "images/test_image.png"
+
+    FileUtils.rm_rf(image_path)
+  end
+
+  def test_view_image_not_found
+    get "/image/test_image.png"
+    assert_equal 302, last_response.status
+
+    assert_equal "test_image.png does not exist.", session[:error]
+  end
+
+  def test_delete_image
+    create_document "test_image.png"
+    FileUtils.mkdir_p(image_path)
+
+    path = "#{data_path}/test_image.png"
+    post "/image/upload",
+         { image_name: Rack::Test::UploadedFile.new(path, "image/png") },
+         admin_session
+
+    post "/image/test_image.png/delete"
+
+    assert_equal 302, last_response.status
+    assert_equal "Image test_image.png has been deleted.", session[:success]
+
+    FileUtils.rm_rf(image_path)
   end
 end

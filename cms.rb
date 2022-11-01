@@ -68,6 +68,8 @@ def load_file_content(path)
     content
   when ".md"
     erb render_markdown(content)
+  when "png"
+    content
   end
 end
 
@@ -232,7 +234,7 @@ get '/:file_name' do
   end
 end
 
-get '/public/images/:image_name' do
+get '/image/:image_name' do
   file_path = File.join(image_path, params[:image_name])
 
   if File.exist?(file_path)
@@ -250,11 +252,13 @@ post '/image/:image_name/delete' do
 
   File.delete(file_path)
 
-  session[:success] = "Image #{params[:file_name]} has been deleted."
+  session[:success] = "Image #{params[:image_name]} has been deleted."
   redirect '/'
 end
 
 post '/image/upload' do
+  require_signed_in_user
+
   @filename = params[:image_name][:filename]
   file = params[:image_name][:tempfile]
 
