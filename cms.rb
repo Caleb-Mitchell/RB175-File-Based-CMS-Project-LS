@@ -141,6 +141,7 @@ def username_taken?(username)
     load_user_credentials.keys.include?(username)
 end
 
+# Comment here TODO: Add comments explaining what each route does
 get '/' do
   create_file_list
   create_image_list
